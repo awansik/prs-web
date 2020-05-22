@@ -20,9 +20,9 @@ public class ProductController {
 	@GetMapping("/")
 	public JsonResponse list() {
 		JsonResponse jr = null;
-		List<Product> product = productRepo.findAll();
-		if (product.size() > 0) {
-			jr = JsonResponse.getInstance(product);
+		List<Product> products = productRepo.findAll();
+		if (products.size() > 0) {
+			jr = JsonResponse.getInstance(products);
 		} else {
 			jr = JsonResponse.getErrorInstance("No products found.");
 		}
@@ -36,7 +36,7 @@ public class ProductController {
 		if (product.isPresent()) {
 			jr = JsonResponse.getInstance(product.get());
 		} else {
-			jr = JsonResponse.getErrorInstance("No products found for ID: " + id);
+			jr = JsonResponse.getErrorInstance("No product found for ID: " + id);
 		}
 		return jr;
 	}

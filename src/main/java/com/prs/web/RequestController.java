@@ -19,15 +19,16 @@ import com.prs.db.UserRepository;
 public class RequestController {
 	@Autowired
 	private RequestRepository requestRepo;
+	
 	@Autowired
 	private UserRepository userRepo;
 
 	@GetMapping("/")
 	public JsonResponse list() {
 		JsonResponse jr = null;
-		List<Request> request = requestRepo.findAll();
-		if (request.size() > 0) {
-			jr = JsonResponse.getInstance(request);
+		List<Request> requests = requestRepo.findAll();
+		if (requests.size() > 0) {
+			jr = JsonResponse.getInstance(requests);
 		} else {
 			jr = JsonResponse.getErrorInstance("No requests found.");
 		}
@@ -49,9 +50,9 @@ public class RequestController {
 	@PostMapping("/")
 	public JsonResponse createRequest(@RequestBody Request r) {
 		JsonResponse jr = null;
+		r.setStatus("New");
+		r.setSubmittedDate(LocalDateTime.now());
 		try {
-			r.setStatus("New");
-			r.setSubmittedDate(LocalDateTime.now());
 			r = requestRepo.save(r);
 			jr = JsonResponse.getInstance(r);
 		} catch (DataIntegrityViolationException dive) {
@@ -93,24 +94,23 @@ public class RequestController {
 	@PutMapping("/submit-review")
 	public JsonResponse submitRequestForReview(@RequestBody Request r) {
 		JsonResponse jr = null;
-		try {
-			if (requestRepo.existsById(r.getId())) {
-				if (r.getTotal() <= 50.00) {
-					r.setStatus("Approved");
-					r.setSubmittedDate(LocalDateTime.now());
-				} else {
-					r.setStatus("Review");
-					r.setSubmittedDate(LocalDateTime.now());
-				}
-				jr = JsonResponse.getInstance(requestRepo.save(r));
-			} else {
-				jr = JsonResponse.getInstance(
-						"PurchaseRequest ID: " + r.getId() + " does not exist and you are attempting to save it");
-			}
-
-		} catch (Exception e) {
-			jr = JsonResponse.getInstance(e);
+		if (r.getTotal() <= 50.00) {
+			r.setStatus("Approved");		
 		}
+		else {
+			r.setStatus("Review");
+		}
+		
+		r.setSubmittedDate(LocalDateTime.now());
+		
+		try {
+			r = requestRepo.save(r);
+			jr = JsonResponse.getInstance(r);
+		} catch (Exception e) {
+			jr = JsonResponse.getErrorInstance("Error updating request: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
 		return jr;
 	}
 	
@@ -124,10 +124,40 @@ public class RequestController {
 			if (!request.isEmpty()) {
 				jr = JsonResponse.getInstance(request);
 			} else {
-				jr = JsonResponse.getErrorInstance("No requests found in for id: " + id);
+				jr = JsonResponse.getErrorInstance("No requests found for ID: " + id);
 			}
 		} else {
-			jr = JsonResponse.getErrorInstance("No user exists for id: " + id);
+			jr = JsonResponse.getErrorInstance("No user exists for ID: " + id);
+		}
+		return jr;
+	}
+	
+
+	@PutMapping("/approve")
+	public JsonResponse approveRequest(@RequestBody Request r) {
+		JsonResponse jr = null;
+		r.setStatus("Approved");
+		try {
+			r = requestRepo.save(r);
+			jr = JsonResponse.getInstance(r);
+		} catch (Exception e) {
+			jr = JsonResponse.getErrorInstance("Error updating request: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return jr;
+	}
+	
+	@PutMapping("/reject")
+	public JsonResponse rejectRequest(@RequestBody Request r) {
+		JsonResponse jr = null;
+		r.setStatus("Rejected");
+		r.setReasonForRejection("null");
+		try {
+			r = requestRepo.save(r);
+			jr = JsonResponse.getInstance(r);
+		} catch (Exception e) {
+			jr = JsonResponse.getErrorInstance("Error updating request: " + e.getMessage());
+			e.printStackTrace();
 		}
 		return jr;
 	}

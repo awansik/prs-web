@@ -42,15 +42,15 @@ public class LineItem {
 		this.id = id;
 	}
 
-	public Request getRequest() {
+	public Request getRequestId() {
 		return request;
 	}
 
-	public void setRequest(Request request) {
+	public void setRequestId(Request request) {
 		this.request = request;
 	}
 
-	public Product getProduct() {
+	public Product getProductId() {
 		return product;
 	}
 
@@ -68,6 +68,6 @@ public class LineItem {
 
 	@Override
 	public String toString() {
-		return "LineItem [id=" + id + ", Request=" + request + ", Product=" + product + ", quantity=" + quantity + "]";
+		return "LineItem [id=" + id + ", requestId=" + request + ", productId=" + product + ", quantity=" + quantity + "]";
 	}
 }

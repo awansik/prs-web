@@ -32,9 +32,9 @@ public class UserController {
 	@GetMapping("/{id}")
 	public JsonResponse get(@PathVariable int id) {
 		JsonResponse jr = null;
-		Optional<User> actor = userRepo.findById(id);
-		if (actor.isPresent()) {
-			jr = JsonResponse.getInstance(actor.get());
+		Optional<User> user = userRepo.findById(id);
+		if (user.isPresent()) {
+			jr = JsonResponse.getInstance(user.get());
 		} else {
 			jr = JsonResponse.getErrorInstance("No user found for ID: " + id);
 		}

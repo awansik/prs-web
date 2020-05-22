@@ -20,9 +20,9 @@ public class VendorController {
 	@GetMapping("/")
 	public JsonResponse list() {
 		JsonResponse jr = null;
-		List<Vendor> vendor = vendorRepo.findAll();
-		if (vendor.size() > 0) {
-			jr = JsonResponse.getInstance(vendor);
+		List<Vendor> vendors = vendorRepo.findAll();
+		if (vendors.size() > 0) {
+			jr = JsonResponse.getInstance(vendors);
 		} else {
 			jr = JsonResponse.getErrorInstance("No vendors found.");
 		}
